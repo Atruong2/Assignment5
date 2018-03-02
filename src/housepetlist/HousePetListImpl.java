@@ -1,0 +1,225 @@
+package housepetlist;
+
+import housepet.HousePet;
+import housepet.PetType;
+import utils.MyUtils;
+
+public class HousePetListImpl implements HousePetList
+{
+	private HousePet [] myArray;
+	private int numPets;
+	
+	// default constructor, creates array of HousePets and sets numPets to 0
+	public HousePetListImpl()
+	{
+		this.myArray = new HousePet [HousePetList.MAX_SIZE];
+		this.numPets = 0;
+	}
+	
+	// walks through the array and creates a String containing each
+	// HousePet instance in the array with a newline separating each
+	// returns the String
+	public String toString()
+	{
+		String temp = "";
+		for (int i = 0; i < this.getSize(); i++)
+		{
+			temp += this.myArray[i] + "\n";
+		}
+		return temp;
+	}
+	
+	//pre: none
+	//post: returns number of HousePets currently in the list
+	//  Example use
+	//  HousePetList list = new HousePetListImpl();  // create empty list
+	//   assertTrue(list.getSize() == 0);   // size should be 0
+	//  boolean result = list.add(new HousePet("Diamond the Cat", 2014, Gender.FEMALE, PetType.CAT));
+	//  assertTrue(list.getSize() == 1);
+	public int getSize()
+	{
+		return this.numPets;
+	}
+	
+	// pre: none
+	// post: returns true if received housepet matches any housepet, assumes equals is overloaded in HousePet
+	//        in this list, returns false if not
+	public boolean contains (HousePet housepet)
+	{
+		if (this.find(housepet) != -1)
+		{
+			return true;
+		}
+	return false;
+	}
+	
+	//pre: none
+	//post: housepet is added to this list if not already there
+	//      (house pets must be unique for each name, pet type, and year)
+	//      returns true if housepet was added, false if no room in the list or duplicate
+	//      housepet is found in the list
+	//      a housepet is a duplicate if it has the same name and same pet type and the same year born
+	//      Example use:
+	//        HousePetList list = new HousePetListImpl();
+	//        boolean result = list.add(new HousePet("Rocky Road", 2016, Gender.MALE, PetType.GERBIL));
+	//        assertTrue(result == true);
+	public boolean add (HousePet housepet)
+	{
+		if (this.getSize() == HousePetList.MAX_SIZE)
+			return false;
+		if (this.contains(housepet))
+			return false;
+		int loc = this.getSize();
+		this.myArray[loc] = housepet;
+		numPets++;
+		return true;
+	}
+	
+	//receives: position - index (zero-based) of position in list to return house pet from
+	// returns: the housepet in the list at given position.
+	//       uses zero-based positions, so 0 is the position of the first house pet in the list
+	//       returns null if received position is out of range, range of list is 0 to 1 less than size of the list
+	//  Example use:
+	//        HousePetList list = new HousePetListImpl();
+	//        HousePet pet2 = new HousePet("Sport", 2010, Gender.MALE, PetType.DOG);
+	//        boolean result = list.add(pet2);
+	// 		  HousePet pet1 = list.get(0);  // should be at position 0
+	//        assertTrue(pet1.equals(pet2));
+	public HousePet get (int position)
+	{
+		if(position >= this.getSize() || position < 0)
+			return null;  
+		return myArray[position];
+	}
+	
+	//receives: housepet - a populated HousePet to locate in this list
+	//returns:  the position of received housepet in the list, if found, -1 if not found
+	//       (uses name, year, pet type when matching)
+	//       returns -1 if received housepet is not found in current list at any position
+	//        HousePetList list = new HousePetListImpl();
+	//        HousePet pet2 = new HousePet("Zorro the Wizard", 2015, Gender.MALE, PetType.BIRD);
+	//        boolean result = list.add(pet2);
+	//		  int position = list2.find(pet2);
+	//	      assertTrue(position == 0);
+	public int find (HousePet housepet)
+	{
+		for(int index = 0; index < this.getSize(); index++)
+		{
+			if(this.myArray[index].equals(housepet))
+			{
+				return index;
+			}
+		}
+		return -1;
+	}
+	
+	//receives: petType, the type of pet to put in the returned String, 
+	//post: returns a String containing a list (1 house pet per line) of house pets
+	//      that are all of the received pet type
+	//      returns an EMPTY String if NO house pets are of the received pet type
+	//	    Example use:
+	//	    HousePetList list = new HousePetListImpl();
+	//        HousePet pet2 = new HousePet("Yellow Smoke", 2010, Gender.FEMALE, PetType.DOG);
+	//        boolean result = list.add(pet2);
+	//        assertTrue(result == true);
+	// 		String list1 = list.getHousePetsDeficient();
+	//      assertTrue(list1.equals(""));
+	public String getHousePetsWithPetType (PetType petType)
+	{
+		String retValue = "";
+		for(int index = 0; index < this.getSize(); index++)
+		{
+			if(myArray[index].getPetType().equals(petType))
+				retValue += myArray[index] + "\n";
+		}
+		return retValue;
+	}
+	
+	//receives: aName - the name we are using to match with any other pets of same name
+	//post: returns a String containing a list (1 house pet per line) of house pets
+	//      with name matching  received  String
+	//      if no matches exist, returns empty string
+	//  Example use:
+	//	HousePetList list = new HousePetListImpl();
+	//      HousePet pet2 = new HousePet("Tweety Bird", 2011, Gender.MALE, PetType.BIRD);
+	//      String matches = list.getHousePetsWithMatchingName("TWEETY BIRD");
+	public String getHousePetsWithMatchingName (String aName)
+	{
+		String retValue = "";
+		aName = MyUtils.properFormat(aName);
+		for(int index = 0; index < this.getSize(); index++)
+		{
+			if(myArray[index].getPetName().equals(aName))
+				retValue += myArray[index] + "\n";
+			else
+				retValue = "";
+		}
+		return retValue;
+	}
+
+	//pre: none
+	//post: this HousePetList is sorted by pet name from lowest to highest (alphabetically)
+	//  Example use (give 2 more):
+	//	HousePetList list = new HousePetListImpl();
+	//  HousePetList aList = new HousePetListImpl("Milly", 2011, Gender.FEMALE, PetType.CAT);
+	//  HousePetList aList = new HousePetListImpl("Joe the Pup", 2017, Gender.MALE, PetType.DOG);
+	// 	list.sort();
+	//      System.out.println("here is the sorted list:\n" + list);  // should be in alphabetical order by pet name
+	//                 
+	public void sort()
+	{
+		for(int i = 1; i < numPets; i++)
+		{
+			int k = i;
+			while (k > 0)
+			{
+				if(myArray[k].getPetName().compareTo(myArray[k-1].getPetName()) < 0)
+				{
+					HousePet temp = myArray[k];
+					myArray[k] = myArray[k-1];
+					myArray[k-1] = temp;
+					k--;
+				}
+				else
+				{
+					k=0;
+				}
+			}
+		}
+	}
+
+	// receives: housepet - a populated pet to remove from this list
+	//post: if a HousePet instance  in this list is found that MATCHES the
+	//      received housepet (assume equals is overloaded for HousePet)
+	//      the HousePet instance in the list that matched received housepet is removed
+	//       from this list AND RETURNED.
+	//       If no HousePet instance is found that has matches received housepet
+	//       then null is RETURNED
+	//    Example use:
+	//      HousePetList list = new HousePetListImpl();
+	//       .....  // do some things to list
+	//      HousePet remPet = list.remove(pet2);
+	//      assertTrue(remPet.equals(pet2));
+	//      assertFalse(list.contains(pet2));
+	//     Example use #2:
+	//        remPet = list.remove(pet2);
+	//        assertTrue(remPet == null);
+	public HousePet remove (HousePet housepet)
+	{
+		int loc = this.find(housepet);
+		if(loc == -1)
+			return null;  
+		HousePet retValue = this.myArray[loc];
+		this.myArray[loc] = this.myArray[numPets - 1];
+		this.numPets--;
+		return retValue;
+	}
+
+	// pre: none
+	//post: this HousePetList instance has a size of 0.
+	// removes all house pets from this instance
+	public void clear()
+	{
+		this.numPets = 0;
+	}
+}
